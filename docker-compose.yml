@@ -1,0 +1,95 @@
+version: "3.8"
+
+services:
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./auth-service:/app
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/auth
+
+  users-service:
+    build: ./users-service
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./users-service:/app
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/users
+
+  courses-service:
+    build: ./courses-service
+    ports:
+      - "5002:5002"
+    volumes:
+      - ./courses-service:/app
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/courses
+
+  media-service:
+    build: ./media-service
+    ports:
+      - "5003:5003"
+    volumes:
+      - ./media-service:/app
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/media
+
+  notifications-service:
+    build: ./notifications-service
+    ports:
+      - "5004:5004"
+    volumes:
+      - ./notifications-service:/app
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/notifications
+
+  messaging-service:
+    build: ./messaging-service
+    ports:
+      - "5005:5005"
+    volumes:
+      - ./messaging-service:/app
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/messaging
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  nginx:
+    image: nginx:latest
+    container_name: api-gateway
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - auth-service
+      - users-service
+      - courses-service
+      - media-service
+      - notifications-service
+      - messaging-service
+
+volumes:
+  mongo_data:
+
