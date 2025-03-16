@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
       # Checkout code
       - name: Checkout code
@@ -20,7 +20,7 @@ jobs:
 
       # Cache Docker layers
       - name: Cache Docker layers
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
@@ -30,12 +30,12 @@ jobs:
       # Build the Docker images
       - name: Build and push Docker images
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/auth-service ./auth-service
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/users-service ./users-service
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/courses-service ./courses-service
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/media-service ./media-service
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/notifications-service ./notifications-service
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/messaging-service ./messaging-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/auth-service ./auth-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/users-service ./users-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/courses-service ./courses-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/media-service ./media-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/notifications-service ./notifications-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/messaging-service ./messaging-service
 
       # Log in to DockerHub
       - name: Log in to DockerHub
