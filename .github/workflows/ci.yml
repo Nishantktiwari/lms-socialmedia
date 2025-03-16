@@ -3,10 +3,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main  # Trigger the pipeline when changes are pushed to the main branch
-  pull_request:
-    branches:
-      - main  # Optionally, trigger the pipeline when a PR is created/updated for the main branch
+      - main  # Trigger pipeline when changes are pushed to the main branch
 
 jobs:
   build:
@@ -37,13 +34,74 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Build and push Docker images
-      - name: Build and push Docker images
+      # Build and push to Dev environment
+      - name: Build and push to Dev Docker images
         run: |
-          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/auth-service ./auth-service
-          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/users-service ./users-service
-          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/courses-service ./courses-service
-          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/media-service ./media-service
-          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/notifications-service ./notifications-service
-          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/messaging-service ./messaging-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/auth-service:dev ./auth-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/users-service:dev ./users-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/courses-service:dev ./courses-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/media-service:dev ./media-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/notifications-service:dev ./notifications-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/messaging-service:dev ./messaging-service
+
+      # Build and push to QA environment
+      - name: Build and push to QA Docker images
+        run: |
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/auth-service:qa ./auth-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/users-service:qa ./users-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/courses-service:qa ./courses-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/media-service:qa ./media-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/notifications-service:qa ./notifications-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/messaging-service:qa ./messaging-service
+
+      # Build and push to Stage environment
+      - name: Build and push to Stage Docker images
+        run: |
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/auth-service:stage ./auth-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/users-service:stage ./users-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/courses-service:stage ./courses-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/media-service:stage ./media-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/notifications-service:stage ./notifications-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/messaging-service:stage ./messaging-service
+
+      # Build and push to Prod environment
+      - name: Build and push to Prod Docker images
+        run: |
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/auth-service:prod ./auth-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/users-service:prod ./users-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/courses-service:prod ./courses-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/media-service:prod ./media-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/notifications-service:prod ./notifications-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/messaging-service:prod ./messaging-service
+
+      # Push Docker images for all services (this step could be included inside the build steps if desired)
+      - name: Push all Docker images
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/auth-service:dev
+          docker push ${{ secrets.DOCKER_USERNAME }}/users-service:dev
+          docker push ${{ secrets.DOCKER_USERNAME }}/courses-service:dev
+          docker push ${{ secrets.DOCKER_USERNAME }}/media-service:dev
+          docker push ${{ secrets.DOCKER_USERNAME }}/notifications-service:dev
+          docker push ${{ secrets.DOCKER_USERNAME }}/messaging-service:dev
+
+          docker push ${{ secrets.DOCKER_USERNAME }}/auth-service:qa
+          docker push ${{ secrets.DOCKER_USERNAME }}/users-service:qa
+          docker push ${{ secrets.DOCKER_USERNAME }}/courses-service:qa
+          docker push ${{ secrets.DOCKER_USERNAME }}/media-service:qa
+          docker push ${{ secrets.DOCKER_USERNAME }}/notifications-service:qa
+          docker push ${{ secrets.DOCKER_USERNAME }}/messaging-service:qa
+
+          docker push ${{ secrets.DOCKER_USERNAME }}/auth-service:stage
+          docker push ${{ secrets.DOCKER_USERNAME }}/users-service:stage
+          docker push ${{ secrets.DOCKER_USERNAME }}/courses-service:stage
+          docker push ${{ secrets.DOCKER_USERNAME }}/media-service:stage
+          docker push ${{ secrets.DOCKER_USERNAME }}/notifications-service:stage
+          docker push ${{ secrets.DOCKER_USERNAME }}/messaging-service:stage
+
+          docker push ${{ secrets.DOCKER_USERNAME }}/auth-service:prod
+          docker push ${{ secrets.DOCKER_USERNAME }}/users-service:prod
+          docker push ${{ secrets.DOCKER_USERNAME }}/courses-service:prod
+          docker push ${{ secrets.DOCKER_USERNAME }}/media-service:prod
+          docker push ${{ secrets.DOCKER_USERNAME }}/notifications-service:prod
+          docker push ${{ secrets.DOCKER_USERNAME }}/messaging-service:prod
 
