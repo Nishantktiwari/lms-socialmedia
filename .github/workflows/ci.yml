@@ -1,8 +1,19 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main  # Trigger the pipeline when changes are pushed to the main branch
+  pull_request:
+    branches:
+      - main  # Optionally, trigger the pipeline when a PR is created/updated for the main branch
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout code
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -26,8 +37,13 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Build and push the Docker images
+      # Build and push Docker images
       - name: Build and push Docker images
         run: |
           docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/auth-service ./auth-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/users-service ./users-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/courses-service ./courses-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/media-service ./media-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/notifications-service ./notifications-service
+          docker buildx build --push -t ${{ secrets.DOCKER_USERNAME }}/messaging-service ./messaging-service
 
